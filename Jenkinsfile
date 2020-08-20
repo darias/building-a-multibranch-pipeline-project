@@ -9,14 +9,19 @@ pipeline {
         CI = 'true'
     }
     stages {
-        stage('Build') {
+        stage('Preliminary Test') {
             steps {
-                sh 'npm install'
+                withAWS(profile: "default", region: "${env.REGION}") {
+                    sh("aws --region ${env.REGION} eks list-clusters")
+                }
             }
         }
-        stage('Test') {
+        stage('Build') {
+            when {
+                branch 'master'
+            }
             steps {
-                sh './jenkins/scripts/test.sh'
+                sh 'npm install'
             }
         }
         stage('Deliver for development') {
