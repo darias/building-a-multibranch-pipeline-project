@@ -30,19 +30,19 @@ pipeline {
         CI = 'true'
     }
     stages {
+        stage('Preliminary Test') {
+            steps {
+                withAWS(profile: "default", region: "${env.REGION}") {
+                    sh("aws --region ${env.REGION} eks list-clusters")
+                }
+            }
+        }
         stage('Build') {
             when {
                 branch 'master'
             }
             steps {
                 sh 'npm install'
-            }
-        }
-        stage('Test') {
-            steps {
-                withAWS(profile: "default") {
-                    sh("aws eks list-clusters")
-                }
             }
         }
         stage('Deliver for development') {
